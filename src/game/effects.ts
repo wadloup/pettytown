@@ -63,7 +63,7 @@ export const addPostActionFeedback = (
     pendingPairFirstNpcId: undefined,
     interaction: {
       mode: "idle",
-      instructionText: "Action appliquee : observe les reactions.",
+      instructionText: "Action appliquee. Observe les reactions.",
     },
     effects: [effect, ...next.effects].slice(0, 12),
     feedbacks: [feedback, ...next.feedbacks].slice(0, 4),
@@ -73,5 +73,5 @@ export const addPostActionFeedback = (
 export const pruneVisualFeedback = (state: GameState): GameState => ({
   ...state,
   effects: state.effects.filter((effect) => state.time - effect.createdAt < effect.duration),
-  feedbacks: state.feedbacks.filter((feedback) => state.time - feedback.createdAt < 150),
+  feedbacks: state.feedbacks.filter((feedback) => state.time - feedback.createdAt < 60),
 });

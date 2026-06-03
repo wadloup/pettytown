@@ -185,7 +185,7 @@ export type Intervention = {
   visualIcon: StatusIcon;
 };
 
-export type InteractionMode = "idle" | "selecting_npc" | "selecting_location" | "selecting_two_npcs" | "placing_object" | "tutorial";
+export type InteractionMode = "idle" | "selecting_npc" | "selecting_location" | "selecting_two_npcs" | "placing_object";
 
 export type InteractionState = {
   mode: InteractionMode;

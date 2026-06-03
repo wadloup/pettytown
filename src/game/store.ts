@@ -37,12 +37,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
 
       if (state.interaction.mode === "selecting_two_npcs" && selectedIntervention) {
-        if (!state.interaction.firstSelectedNpcId || state.interaction.firstSelectedNpcId === npcId) {
+        if (!state.interaction.firstSelectedNpcId) {
           return {
             ...state,
             selectedNpcId: npcId,
             pendingPairFirstNpcId: npcId,
             interaction: buildSecondNpcInteraction(selectedIntervention.id, npcId),
+          };
+        }
+
+        if (state.interaction.firstSelectedNpcId === npcId) {
+          return {
+            ...state,
+            interaction: {
+              ...state.interaction,
+              instructionText: "Choisis un autre PNJ pour completer l'action.",
+            },
           };
         }
 
@@ -67,13 +77,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         return addPostActionFeedback(state, next, selectedIntervention.id, "location", locationId);
       }
 
-      if (state.interaction.mode !== "idle") return state;
-
-      return {
-        ...state,
-        selectedLocationId: locationId,
-        selectedNpcId: undefined,
-      };
+      return state;
     }),
   chooseIntervention: (interventionId) =>
     set((state) => {

@@ -1,6 +1,6 @@
 import { Html, Text } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Location } from "../../game/types";
 import BuildingMesh from "./BuildingMesh";
 
@@ -16,9 +16,33 @@ type LocationMeshProps = {
 function LocationMesh({ location, selected, targetable, interactionActive, onSelect, onHover }: LocationMeshProps) {
   const [hovered, setHovered] = useState(false);
 
+  useEffect(() => {
+    if (!targetable && hovered) {
+      setHovered(false);
+      onHover(false);
+      document.body.style.cursor = "";
+    }
+  }, [hovered, onHover, targetable]);
+
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
+    if (!targetable) return;
     onSelect(location.id);
+  };
+
+  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
+    if (!targetable) return;
+    event.stopPropagation();
+    setHovered(true);
+    onHover(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = () => {
+    if (!hovered) return;
+    setHovered(false);
+    onHover(false);
+    document.body.style.cursor = "";
   };
 
   const pulseColor =
@@ -27,17 +51,23 @@ function LocationMesh({ location, selected, targetable, interactionActive, onSel
   return (
     <group
       position={[location.position.x, 0, location.position.z]}
-      onClick={handleClick}
-      onPointerOver={(event) => {
-        event.stopPropagation();
-        setHovered(true);
-        onHover(true);
-      }}
-      onPointerOut={() => {
-        setHovered(false);
-        onHover(false);
-      }}
+      onClick={targetable ? handleClick : undefined}
+      onPointerOver={targetable ? handlePointerOver : undefined}
+      onPointerOut={targetable ? handlePointerOut : undefined}
     >
+      {targetable ? (
+        <mesh
+          position={[0, 0.09, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          onClick={handleClick}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
+        >
+          <planeGeometry args={[location.size.width + 1.2, location.size.depth + 1.2]} />
+          <meshBasicMaterial transparent opacity={0.002} depthWrite={false} />
+        </mesh>
+      ) : null}
+
       <mesh receiveShadow position={[0, 0.015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[location.size.width + 0.52, location.size.depth + 0.52]} />
         <meshStandardMaterial
@@ -75,7 +105,7 @@ function LocationMesh({ location, selected, targetable, interactionActive, onSel
         <Html position={[0, location.size.height + 1.32, 0]} center>
           <div className="world-tooltip">
             <strong>{location.name}</strong>
-            <span>{targetable ? "Lieu ciblable" : location.vibe}</span>
+            <span>Cliquer pour cibler ce lieu</span>
           </div>
         </Html>
       ) : null}

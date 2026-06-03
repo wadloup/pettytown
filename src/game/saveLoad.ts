@@ -27,9 +27,11 @@ export const loadGame = (): GameState | undefined => {
           avatarColor: visual.primary,
         };
       }),
-      interaction: parsed.interaction ?? idleInteraction,
-      effects: parsed.effects ?? [],
-      feedbacks: parsed.feedbacks ?? [],
+      selectedInterventionId: undefined,
+      pendingPairFirstNpcId: undefined,
+      interaction: idleInteraction,
+      effects: [],
+      feedbacks: [],
     };
   } catch {
     return undefined;

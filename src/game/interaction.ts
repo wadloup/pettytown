@@ -8,10 +8,17 @@ export const idleInteraction: InteractionState = {
   instructionText: idleInstruction,
 };
 
-const targetText: Record<Intervention["target"], string> = {
-  npc: "Clique sur un PNJ cible.",
-  location: "Clique sur un lieu cible.",
-  npc_pair: "Choisis le premier PNJ.",
+const instructionByIntervention: Record<Intervention["id"], string> = {
+  rumor: "Clique sur un PNJ pour lancer une rumeur.",
+  anonymous_message: "Clique sur un PNJ pour envoyer une notification anonyme.",
+  weird_object: "Clique sur un lieu pour faire apparaitre un objet bizarre.",
+  intrusive_thought: "Clique sur un PNJ pour envoyer une pensee intrusive.",
+  opportunity: "Clique sur un PNJ pour creer une opportunite.",
+  jealousy: "Choisis deux PNJ : le premier deviendra jaloux du second.",
+  party: "Clique sur un lieu pour organiser une fete.",
+  power_outage: "Clique sur un lieu pour provoquer une panne d'electricite.",
+  money: "Clique sur un PNJ pour donner de l'argent.",
+  minor_disaster: "Clique sur un lieu pour declencher une catastrophe mineure.",
 };
 
 export const modeForIntervention = (intervention: Intervention): InteractionState["mode"] => {
@@ -29,7 +36,7 @@ export const buildInteractionForIntervention = (interventionId: Intervention["id
   return {
     mode: modeForIntervention(intervention),
     selectedInterventionId: intervention.id,
-    instructionText: targetText[intervention.target],
+    instructionText: instructionByIntervention[intervention.id],
   };
 };
 
@@ -37,7 +44,7 @@ export const buildSecondNpcInteraction = (interventionId: Intervention["id"], fi
   mode: "selecting_two_npcs",
   selectedInterventionId: interventionId,
   firstSelectedNpcId,
-  instructionText: "Choisis un deuxieme PNJ.",
+  instructionText: "Choisis le second PNJ : le premier deviendra jaloux.",
 });
 
 export const withHoveredTarget = (interaction: InteractionState, hoveredTargetId?: string): InteractionState => ({

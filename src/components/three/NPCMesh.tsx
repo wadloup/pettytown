@@ -1,7 +1,7 @@
 import { Html, Text } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Group, Vector3 } from "three";
 import { getNpcVisualProfile } from "../../data/npcVisuals";
 import type { NPC, NPCVisual } from "../../game/types";
@@ -12,6 +12,7 @@ type NPCMeshProps = {
   npc: NPC;
   selected: boolean;
   targetable: boolean;
+  clickable: boolean;
   involvedInDrama: boolean;
   onSelect: (npcId: string) => void;
   onHover: (hovered: boolean) => void;
@@ -194,7 +195,7 @@ function TorsoMesh({ visual }: { visual: NPCVisual }) {
   );
 }
 
-function NPCMesh({ npc, selected, targetable, involvedInDrama, onSelect, onHover }: NPCMeshProps) {
+function NPCMesh({ npc, selected, targetable, clickable, involvedInDrama, onSelect, onHover }: NPCMeshProps) {
   const [hovered, setHovered] = useState(false);
   const visual = npc.visual ?? getNpcVisualProfile(Number(npc.id.replace("npc_", "")) || 0, npc.personality);
   const groupRef = useRef<Group>(null);
@@ -202,6 +203,14 @@ function NPCMesh({ npc, selected, targetable, involvedInDrama, onSelect, onHover
   const leftLegRef = useRef<Group>(null);
   const rightLegRef = useRef<Group>(null);
   const target = useMemo(() => new Vector3(npc.position.x, npc.position.y, npc.position.z), [npc.position.x, npc.position.y, npc.position.z]);
+
+  useEffect(() => {
+    if (!clickable && hovered) {
+      setHovered(false);
+      onHover(false);
+      document.body.style.cursor = "";
+    }
+  }, [clickable, hovered, onHover]);
 
   useFrame((state, delta) => {
     const isMoving = Math.hypot(npc.targetPosition.x - npc.position.x, npc.targetPosition.z - npc.position.z) > 0.28;
@@ -221,26 +230,37 @@ function NPCMesh({ npc, selected, targetable, involvedInDrama, onSelect, onHover
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    if (!clickable) return;
     event.stopPropagation();
     onSelect(npc.id);
   };
+
+  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
+    if (!clickable) return;
+    event.stopPropagation();
+    setHovered(true);
+    onHover(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = () => {
+    if (!hovered) return;
+    setHovered(false);
+    onHover(false);
+    document.body.style.cursor = "";
+  };
+
+  const showHover = hovered && clickable;
 
   return (
     <group
       ref={groupRef}
       position={[npc.position.x, 0, npc.position.z]}
       onClick={handleClick}
-      onPointerOver={(event) => {
-        event.stopPropagation();
-        setHovered(true);
-        onHover(true);
-      }}
-      onPointerOut={() => {
-        setHovered(false);
-        onHover(false);
-      }}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
     >
-      {selected || hovered || targetable ? <SelectionRing color={selected ? visual.accent : targetable ? "#D946EF" : visual.primary} /> : null}
+      {selected || showHover || targetable ? <SelectionRing color={selected ? visual.accent : targetable ? "#D946EF" : visual.primary} /> : null}
       {involvedInDrama ? (
         <mesh position={[0, 1.86, 0]}>
           <sphereGeometry args={[0.07, 8, 6]} />
@@ -292,7 +312,7 @@ function NPCMesh({ npc, selected, targetable, involvedInDrama, onSelect, onHover
 
       <StatusBillboard icons={npc.statusIcons} />
 
-      {(selected || hovered || targetable) && (
+      {(selected || showHover || targetable) && (
         <Text
           position={[0, 1.98, 0]}
           rotation={[-Math.PI / 4, 0, 0]}
@@ -307,7 +327,7 @@ function NPCMesh({ npc, selected, targetable, involvedInDrama, onSelect, onHover
         </Text>
       )}
 
-      {hovered ? (
+      {showHover ? (
         <Html position={[0, 2.24, 0]} center>
           <div className="world-tooltip npc-tooltip">
             <strong>{npc.name}</strong>
