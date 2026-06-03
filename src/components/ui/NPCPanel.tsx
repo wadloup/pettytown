@@ -12,7 +12,11 @@ const statLabels = [
   ["reputation", "Reputation"],
 ] as const;
 
-function NPCPanel() {
+type NPCPanelProps = {
+  embedded?: boolean;
+};
+
+function NPCPanel({ embedded = false }: NPCPanelProps) {
   const selectedNpcId = useGameStore((state) => state.selectedNpcId);
   const npcs = useGameStore((state) => state.npcs);
   const clearSelection = useGameStore((state) => state.clearSelection);
@@ -24,9 +28,10 @@ function NPCPanel() {
   const relationships = topRelationships(npc, npcs, 4);
   const secretVisible = npc.stats.suspicion > 78 || npc.stats.shame > 66;
   const secretText = secretVisible ? npc.secret : `${npc.secret.slice(0, Math.max(10, Math.floor(npc.secret.length * 0.32)))}...`;
+  const className = embedded ? "npc-panel npc-panel-embedded" : "npc-panel panel-surface";
 
   return (
-    <aside className="npc-panel panel-surface" aria-labelledby="npc-panel-title">
+    <section className={className} aria-labelledby="npc-panel-title">
       <div className="npc-panel-head">
         <div className="npc-avatar" style={{ "--primary": visual.primary, "--secondary": visual.secondary, "--accent": visual.accent, "--skin": visual.skin } as CSSProperties} aria-hidden="true">
           <i />
@@ -110,7 +115,7 @@ function NPCPanel() {
           <p key={memory.id}>{memory.description}</p>
         ))}
       </div>
-    </aside>
+    </section>
   );
 }
 

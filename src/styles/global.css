@@ -104,11 +104,20 @@ button:disabled {
 }
 
 .app-shell[data-immersive="true"] .left-dock,
-.app-shell[data-immersive="true"] .right-dock,
-.app-shell[data-immersive="true"] .npc-panel {
+.app-shell[data-immersive="true"] .right-dock {
   opacity: 0;
   pointer-events: none;
   transform: translateY(12px);
+}
+
+.app-shell[data-immersive="true"] .top-bar {
+  grid-template-columns: auto auto auto;
+  max-width: 760px;
+}
+
+.app-shell[data-immersive="true"] .brand-mark small,
+.app-shell[data-immersive="true"] .top-metrics span:nth-child(n + 3) {
+  display: none;
 }
 
 .game-canvas {
@@ -121,7 +130,6 @@ button:disabled {
 .top-bar,
 .left-dock,
 .right-dock,
-.npc-panel,
 .summary-backdrop {
   position: absolute;
   z-index: 6;
@@ -294,9 +302,9 @@ button:disabled {
   bottom: 18px;
   left: 18px;
   display: grid;
-  grid-template-rows: minmax(320px, 1fr) minmax(0, auto);
-  gap: 12px;
-  width: min(318px, calc(100vw - 36px));
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+  width: min(292px, calc(100vw - 36px));
   pointer-events: none;
   transition: opacity 180ms ease, transform 180ms ease;
 }
@@ -305,7 +313,7 @@ button:disabled {
   top: 86px;
   right: 18px;
   bottom: 18px;
-  width: min(338px, calc(100vw - 36px));
+  width: min(318px, calc(100vw - 36px));
   pointer-events: none;
   transition: opacity 180ms ease, transform 180ms ease;
 }
@@ -326,7 +334,7 @@ button:disabled {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 12px 9px;
+  padding: 10px 10px 7px;
 }
 
 .panel-heading span,
@@ -377,8 +385,8 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
-  margin: 0 10px 10px;
-  padding: 8px 9px;
+  margin: 0 8px 8px;
+  padding: 7px 8px;
   border: 1px solid rgba(34, 211, 238, 0.28);
   border-radius: 11px;
   background: rgba(34, 211, 238, 0.08);
@@ -402,20 +410,20 @@ button:disabled {
 
 .intervention-grid {
   display: grid;
-  gap: 8px;
-  max-height: calc(100vh - 220px);
-  padding: 0 10px 10px;
+  gap: 6px;
+  max-height: calc(100vh - 338px);
+  padding: 0 8px 8px;
   overflow-y: auto;
 }
 
 .intervention-card {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 9px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 8px;
   align-items: center;
   width: 100%;
-  min-height: 50px;
-  padding: 7px;
+  min-height: 44px;
+  padding: 6px;
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 12px;
   background: rgba(2, 6, 23, 0.34);
@@ -447,8 +455,8 @@ button:disabled {
 
 .intervention-icon {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 29px;
+  height: 29px;
   place-items: center;
   border: 1px solid rgba(34, 211, 238, 0.3);
   border-radius: 10px;
@@ -466,7 +474,7 @@ button:disabled {
   display: block;
   overflow: hidden;
   color: var(--text);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   line-height: 1.1;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -474,10 +482,10 @@ button:disabled {
 
 .intervention-text em {
   display: block;
-  margin-top: 3px;
+  margin-top: 2px;
   overflow: hidden;
   color: #cbd5e1;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-style: normal;
   line-height: 1.18;
   text-overflow: ellipsis;
@@ -486,9 +494,9 @@ button:disabled {
 
 .intervention-text small {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.64rem;
   font-weight: 760;
 }
 
@@ -527,8 +535,8 @@ button:disabled {
 }
 
 .stats-panel {
-  max-height: 318px;
-  overflow-y: auto;
+  max-height: 220px;
+  overflow: hidden;
 }
 
 .stats-panel.is-collapsed {
@@ -537,8 +545,8 @@ button:disabled {
 
 .stat-list {
   display: grid;
-  gap: 9px;
-  padding: 0 10px 10px;
+  gap: 5px;
+  padding: 0 8px 8px;
 }
 
 .stat-row {
@@ -547,7 +555,7 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) 44px;
   gap: 8px;
   align-items: center;
-  min-height: 34px;
+  min-height: 29px;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -558,7 +566,7 @@ button:disabled {
   gap: 7px;
   min-width: 0;
   color: #dbeafe;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 850;
 }
 
@@ -566,7 +574,7 @@ button:disabled {
   position: relative;
   z-index: 1;
   color: var(--text);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   text-align: right;
 }
 
@@ -575,7 +583,7 @@ button:disabled {
   right: 0;
   bottom: 0;
   left: 0;
-  height: 6px;
+  height: 5px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--cyan), var(--purple), var(--magenta), var(--amber));
   box-shadow: 0 0 18px rgba(217, 70, 239, 0.22);
@@ -583,23 +591,40 @@ button:disabled {
 
 .arc-list {
   display: grid;
-  gap: 7px;
-  padding: 8px 10px 10px;
+  gap: 5px;
+  padding: 6px 8px 8px;
   border-top: 1px solid var(--line);
+}
+
+.stats-panel:has(.arc-list.is-open) {
+  overflow-y: auto;
 }
 
 .mini-heading {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 7px;
   color: #dbeafe;
   font-size: 0.78rem;
 }
 
+.history-toggle {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.history-toggle strong {
+  flex: 1;
+}
+
 .arc-pill {
   display: grid;
-  gap: 3px;
-  padding: 8px;
+  gap: 2px;
+  padding: 6px 7px;
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 11px;
   background: rgba(2, 6, 23, 0.28);
@@ -641,6 +666,57 @@ button:disabled {
   margin-left: auto;
 }
 
+.right-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.right-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.right-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.34);
+  color: #cbd5e1;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.right-tab.is-active {
+  border-color: rgba(34, 211, 238, 0.38);
+  background: rgba(34, 211, 238, 0.1);
+  color: #e0fbff;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.08);
+}
+
+.right-tab:disabled {
+  opacity: 0.5;
+}
+
+.right-panel-body {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-log-embedded {
+  height: 100%;
+}
+
 .event-log.is-collapsed .panel-heading {
   justify-content: center;
 }
@@ -652,8 +728,8 @@ button:disabled {
 .event-list {
   display: grid;
   align-content: start;
-  gap: 8px;
-  padding: 0 10px 10px;
+  gap: 7px;
+  padding: 8px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -662,7 +738,7 @@ button:disabled {
   min-width: 0;
   display: grid;
   gap: 5px;
-  padding: 10px;
+  padding: 9px;
   border: 1px solid rgba(148, 163, 184, 0.13);
   border-left: 4px solid var(--cyan);
   border-radius: 12px;
@@ -684,6 +760,12 @@ button:disabled {
   background: rgba(245, 158, 11, 0.12);
 }
 
+.event-compact {
+  gap: 3px;
+  padding: 7px 8px;
+  border-left-width: 3px;
+}
+
 .event-item header {
   display: flex;
   align-items: center;
@@ -702,8 +784,8 @@ button:disabled {
 
 .event-item header b {
   display: grid;
-  width: 28px;
-  height: 22px;
+  width: 26px;
+  height: 20px;
   place-items: center;
   border-radius: 8px;
   background: rgba(124, 58, 237, 0.22);
@@ -714,7 +796,7 @@ button:disabled {
 .event-item h3 {
   margin: 0;
   color: var(--text);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   line-height: 1.15;
 }
 
@@ -722,8 +804,19 @@ button:disabled {
   overflow-wrap: anywhere;
   margin: 0;
   color: #cbd5e1;
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
+.event-compact p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.event-compact h3 {
   font-size: 0.78rem;
-  line-height: 1.36;
 }
 
 .event-item small {
@@ -742,19 +835,29 @@ button:disabled {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
+.npc-panel-embedded {
+  right: auto;
+  bottom: auto;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  overflow-y: auto;
+  transform: none;
+}
+
 .npc-panel-head {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) 31px;
-  gap: 11px;
+  grid-template-columns: 50px minmax(0, 1fr) 31px;
+  gap: 9px;
   align-items: center;
-  padding: 13px;
+  padding: 10px;
   border-bottom: 1px solid var(--line);
 }
 
 .npc-avatar {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
   border-radius: 14px;
@@ -773,18 +876,18 @@ button:disabled {
 
 .npc-avatar i {
   right: 13px;
-  bottom: 8px;
+  bottom: 7px;
   left: 13px;
-  height: 25px;
+  height: 22px;
   border-radius: 8px 8px 4px 4px;
   background: var(--primary);
 }
 
 .npc-avatar b {
-  top: 8px;
-  left: 17px;
-  width: 22px;
-  height: 22px;
+  top: 7px;
+  left: 15px;
+  width: 19px;
+  height: 19px;
   border-radius: 8px;
   background: var(--skin);
   box-shadow: 0 -6px 0 var(--secondary);
@@ -792,9 +895,9 @@ button:disabled {
 
 .npc-avatar span {
   right: 9px;
-  bottom: 19px;
+  bottom: 17px;
   width: 9px;
-  height: 25px;
+  height: 22px;
   border-radius: 999px;
   background: var(--accent);
 }
@@ -802,8 +905,8 @@ button:disabled {
 .npc-panel-head small {
   display: inline-flex;
   max-width: 100%;
-  margin-top: 5px;
-  padding: 4px 7px;
+  margin-top: 4px;
+  padding: 3px 7px;
   overflow: hidden;
   border: 1px solid rgba(34, 211, 238, 0.28);
   border-radius: 999px;
@@ -817,12 +920,12 @@ button:disabled {
 .trait-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 11px 13px 0;
+  gap: 5px;
+  padding: 9px 10px 0;
 }
 
 .trait-row span {
-  padding: 5px 7px;
+  padding: 4px 6px;
   border: 1px solid rgba(34, 211, 238, 0.2);
   border-radius: 999px;
   background: rgba(34, 211, 238, 0.08);
@@ -833,8 +936,8 @@ button:disabled {
 
 .npc-section {
   display: grid;
-  gap: 6px;
-  padding: 12px 13px 0;
+  gap: 5px;
+  padding: 10px 10px 0;
 }
 
 .npc-section h3 {
@@ -850,8 +953,8 @@ button:disabled {
 .npc-section p {
   margin: 0;
   color: #dbeafe;
-  font-size: 0.82rem;
-  line-height: 1.42;
+  font-size: 0.76rem;
+  line-height: 1.34;
 }
 
 .npc-section small {
@@ -860,7 +963,7 @@ button:disabled {
 }
 
 .secret-section p {
-  padding: 9px;
+  padding: 7px;
   border: 1px dashed rgba(217, 70, 239, 0.4);
   border-radius: 12px;
   background: rgba(217, 70, 239, 0.08);
@@ -869,15 +972,15 @@ button:disabled {
 .npc-stats {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
-  padding: 12px 13px 0;
+  gap: 5px;
+  padding: 10px 10px 0;
 }
 
 .npc-stats div {
   position: relative;
   min-width: 0;
-  min-height: 55px;
-  padding: 8px;
+  min-height: 48px;
+  padding: 7px;
   overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 12px;
@@ -896,7 +999,7 @@ button:disabled {
 
 .npc-stats strong {
   display: block;
-  margin-top: 7px;
+  margin-top: 5px;
   color: var(--text);
   font-size: 0.9rem;
 }
@@ -912,7 +1015,7 @@ button:disabled {
 
 .relationship-list {
   display: grid;
-  gap: 7px;
+  gap: 5px;
 }
 
 .relationship-list span {
@@ -920,8 +1023,8 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
-  min-height: 30px;
-  padding: 0 9px;
+  min-height: 27px;
+  padding: 0 8px;
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 10px;
   background: rgba(2, 6, 23, 0.3);
@@ -944,18 +1047,18 @@ button:disabled {
 
 .memory-list {
   display: grid;
-  gap: 7px;
-  padding: 12px 13px 13px;
+  gap: 6px;
+  padding: 10px;
 }
 
 .memory-list p {
   margin: 0;
-  padding: 9px;
+  padding: 7px;
   border-radius: 11px;
   background: rgba(15, 23, 42, 0.54);
   color: #cbd5e1;
-  font-size: 0.74rem;
-  line-height: 1.35;
+  font-size: 0.7rem;
+  line-height: 1.3;
 }
 
 .summary-backdrop {
@@ -1046,7 +1149,7 @@ button:disabled {
 
 .feedback-stack {
   position: absolute;
-  right: 374px;
+  right: 338px;
   bottom: 76px;
   z-index: 7;
   display: grid;
@@ -1217,10 +1320,8 @@ body[data-tutorial-focus="npcs"] .game-canvas {
     max-height: 40vh;
   }
 
-  .npc-panel {
-    right: 18px;
-    bottom: calc(40vh + 32px);
-    max-height: 34vh;
+  .right-panel {
+    height: 40vh;
   }
 
   .intervention-grid {
@@ -1272,12 +1373,14 @@ body[data-tutorial-focus="npcs"] .game-canvas {
     max-height: 25vh;
   }
 
-  .npc-panel {
-    right: 8px;
-    bottom: calc(46vh + 18px);
-    left: 8px;
-    width: auto;
-    max-height: 28vh;
+  .right-panel {
+    height: 25vh;
+  }
+
+  .npc-panel-embedded {
+    width: 100%;
+    height: 100%;
+    max-height: none;
   }
 
   .npc-stats {
@@ -1302,7 +1405,7 @@ body[data-tutorial-focus="npcs"] .game-canvas {
   .intervention-card {
     grid-template-columns: 1fr;
     align-content: start;
-    min-height: 94px;
+    min-height: 82px;
   }
 
   .intervention-text strong {

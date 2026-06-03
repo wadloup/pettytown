@@ -11,6 +11,7 @@ const statRows = [
 
 function TownStatsPanel() {
   const [collapsed, setCollapsed] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const townStats = useGameStore((state) => state.townStats);
   const dramaArcs = useGameStore((state) => state.dramaArcs);
   const events = useGameStore((state) => state.events);
@@ -45,24 +46,29 @@ function TownStatsPanel() {
           })}
         </div>
 
-        <div className="arc-list">
-          <div className="mini-heading">
+        <div className={historyOpen ? "arc-list is-open" : "arc-list"}>
+          <button type="button" className="mini-heading history-toggle" onClick={() => setHistoryOpen((value) => !value)}>
             <Archive size={15} aria-hidden="true" />
             <strong>Histoire de la ville</strong>
-          </div>
-          {dramaArcs.slice(0, 3).map((arc) => (
-            <article key={arc.id} className={`arc-pill arc-${arc.stage}`}>
-              <span>{arc.stage}</span>
-              <strong>{arc.title}</strong>
-            </article>
-          ))}
-          {historicEvents.map((event) => (
-            <article key={event.id} className="arc-pill historic">
-              <span>historique</span>
-              <strong>{event.description.replace('La ville se souviendra de cette journee comme: "', "").split('"')[0]}</strong>
-            </article>
-          ))}
-          {dramaArcs.length === 0 && historicEvents.length === 0 ? <p className="empty-note">Aucune affaire officielle.</p> : null}
+            {historyOpen ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
+          </button>
+          {historyOpen ? (
+            <>
+              {dramaArcs.slice(0, 3).map((arc) => (
+                <article key={arc.id} className={`arc-pill arc-${arc.stage}`}>
+                  <span>{arc.stage}</span>
+                  <strong>{arc.title}</strong>
+                </article>
+              ))}
+              {historicEvents.map((event) => (
+                <article key={event.id} className="arc-pill historic">
+                  <span>historique</span>
+                  <strong>{event.description.replace('La ville se souviendra de cette journee comme: "', "").split('"')[0]}</strong>
+                </article>
+              ))}
+              {dramaArcs.length === 0 && historicEvents.length === 0 ? <p className="empty-note">Aucune affaire officielle.</p> : null}
+            </>
+          ) : null}
         </div>
       </div>
     </section>
