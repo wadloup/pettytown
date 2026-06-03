@@ -1,0 +1,1 @@
+export { tickGame } from "./simulation";

@@ -97,6 +97,7 @@ function InterventionPanel() {
                 <span className="intervention-icon">{iconMap[intervention.id]}</span>
                 <span className="intervention-text">
                   <strong>{intervention.name}</strong>
+                  <em>{intervention.description}</em>
                   <small>
                     {targetLabel[intervention.target]} - {intervention.cost}
                   </small>

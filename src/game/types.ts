@@ -185,6 +185,35 @@ export type Intervention = {
   visualIcon: StatusIcon;
 };
 
+export type InteractionMode = "idle" | "selecting_npc" | "selecting_location" | "selecting_two_npcs" | "placing_object" | "tutorial";
+
+export type InteractionState = {
+  mode: InteractionMode;
+  selectedInterventionId?: Intervention["id"];
+  firstSelectedNpcId?: string;
+  hoveredTargetId?: string;
+  instructionText: string;
+};
+
+export type VisualEffect = {
+  id: string;
+  type: "rumor_wave" | "glitch" | "idea_flash" | "jealousy_flare" | "opportunity_star" | "party_pulse" | "power_flicker" | "weird_halo" | "minor_alert" | "money_spark";
+  targetType: "npc" | "location";
+  targetId: string;
+  color: string;
+  createdAt: number;
+  duration: number;
+  label: string;
+};
+
+export type FeedbackToast = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: number;
+  tone: "info" | "success" | "drama" | "warning";
+};
+
 export type GameState = {
   npcs: NPC[];
   locations: Location[];
@@ -202,6 +231,9 @@ export type GameState = {
   time: number;
   lastAutonomousEventAt: number;
   summaryOpen: boolean;
+  interaction: InteractionState;
+  effects: VisualEffect[];
+  feedbacks: FeedbackToast[];
 };
 
 export type NPCAction = {

@@ -21,9 +21,14 @@ npm run lint
 
 - `src/App.tsx` : layout principal du jeu.
 - `src/components/three/` : scene 3D, ville, PNJ, objets et billboards.
-- `src/components/ui/` : top bar, journal, interventions, fiche PNJ, resume.
+- `src/components/ui/` : top bar, journal, interventions, fiche PNJ, onboarding, feedbacks et resume.
 - `src/game/initialState.ts` : generation d'une nouvelle ville.
-- `src/game/simulation.ts` : boucle `tickGame`.
+- `src/game/gameLoop.ts` : facade de boucle de jeu, actuellement branchee sur `tickGame`.
+- `src/game/simulation.ts` : avance de la simulation sociale a chaque tick.
+- `src/game/interaction.ts` : etats d'interaction joueur, instructions et selection de cible.
+- `src/game/targeting.ts` : regles qui disent quels PNJ ou lieux sont ciblables.
+- `src/game/effects.ts` : feedbacks d'action, toasts et effets visuels temporaires.
+- `src/game/tutorial.ts` : mini onboarding de premier lancement.
 - `src/game/interventions.ts` : actions d'influence du joueur.
 - `src/game/npcAI.ts` : decisions autonomes des PNJ.
 - `src/game/dramaEngine.ts` : detection et progression des arcs de drama.
@@ -35,8 +40,10 @@ npm run lint
 
 1. Ajouter l'entree dans `interventions` dans `src/game/interventions.ts`.
 2. Ajouter son comportement dans `applyIntervention`.
-3. Ajouter une icone dans `src/components/ui/InterventionPanel.tsx`.
-4. Si elle cree un effet 3D, ajouter un `StatusIcon` dans `src/game/types.ts` et son rendu dans `StatusBillboard.tsx`.
+3. Definir son mode de ciblage dans `src/game/interaction.ts`.
+4. Ajouter son feedback visuel dans `src/game/effects.ts`.
+5. Ajouter une icone dans `src/components/ui/InterventionPanel.tsx`.
+6. Si elle cree un etat durable, ajouter un `StatusIcon` dans `src/game/types.ts` et son rendu dans `StatusBillboard.tsx`.
 
 ## Ajouter du contenu PNJ
 

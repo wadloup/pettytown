@@ -1,4 +1,6 @@
 import { useGameStore } from "../../game/store";
+import { canTargetLocation, canTargetNpc, isNpcInDrama } from "../../game/targeting";
+import EffectMesh from "./EffectMesh";
 import Ground from "./Ground";
 import LocationMesh from "./LocationMesh";
 import NPCMesh from "./NPCMesh";
@@ -8,10 +10,13 @@ function TownScene() {
   const npcs = useGameStore((state) => state.npcs);
   const locations = useGameStore((state) => state.locations);
   const objects = useGameStore((state) => state.objects);
+  const effects = useGameStore((state) => state.effects);
   const selectedNpcId = useGameStore((state) => state.selectedNpcId);
   const selectedLocationId = useGameStore((state) => state.selectedLocationId);
   const selectNpc = useGameStore((state) => state.selectNpc);
   const selectLocation = useGameStore((state) => state.selectLocation);
+  const setHoveredTarget = useGameStore((state) => state.setHoveredTarget);
+  const interaction = useGameStore((state) => state.interaction);
 
   return (
     <group>
@@ -22,7 +27,10 @@ function TownScene() {
           key={location.id}
           location={location}
           selected={location.id === selectedLocationId}
+          targetable={canTargetLocation(useGameStore.getState(), location.id)}
+          interactionActive={interaction.mode !== "idle"}
           onSelect={selectLocation}
+          onHover={(hovered) => setHoveredTarget(hovered ? `location:${location.id}` : undefined)}
         />
       ))}
 
@@ -30,8 +38,24 @@ function TownScene() {
         <ObjectMesh key={object.id} object={object} />
       ))}
 
+      {effects.map((effect) => {
+        const target =
+          effect.targetType === "npc"
+            ? npcs.find((npc) => npc.id === effect.targetId)
+            : locations.find((location) => location.id === effect.targetId);
+        return target ? <EffectMesh key={effect.id} effect={effect} position={target.position} /> : null;
+      })}
+
       {npcs.map((npc) => (
-        <NPCMesh key={npc.id} npc={npc} selected={npc.id === selectedNpcId} onSelect={selectNpc} />
+        <NPCMesh
+          key={npc.id}
+          npc={npc}
+          selected={npc.id === selectedNpcId || interaction.firstSelectedNpcId === npc.id}
+          targetable={canTargetNpc(useGameStore.getState(), npc.id)}
+          involvedInDrama={isNpcInDrama(useGameStore.getState(), npc.id)}
+          onSelect={selectNpc}
+          onHover={(hovered) => setHoveredTarget(hovered ? `npc:${npc.id}` : undefined)}
+        />
       ))}
     </group>
   );

@@ -6,6 +6,7 @@ import { personalityTraits, traitThoughts } from "../data/personalityTraits";
 import { secrets } from "../data/secrets";
 import type { GameEvent, GameState, NPC } from "./types";
 import { makeId, pick, sample } from "./constants";
+import { idleInteraction } from "./interaction";
 import { createRelationship } from "./relationships";
 import { randomPointNear } from "./movement";
 
@@ -119,5 +120,8 @@ export const generateInitialState = (): GameState => {
     time: 0,
     lastAutonomousEventAt: 0,
     summaryOpen: false,
+    interaction: idleInteraction,
+    effects: [],
+    feedbacks: [],
   };
 };

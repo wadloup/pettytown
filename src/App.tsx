@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import GameCanvas from "./components/three/GameCanvas";
 import EventLog from "./components/ui/EventLog";
+import FeedbackToasts from "./components/ui/FeedbackToasts";
+import InstructionPanel from "./components/ui/InstructionPanel";
 import InterventionPanel from "./components/ui/InterventionPanel";
 import NPCPanel from "./components/ui/NPCPanel";
 import SessionSummary from "./components/ui/SessionSummary";
 import TopBar from "./components/ui/TopBar";
 import TownStatsPanel from "./components/ui/TownStatsPanel";
+import TutorialOverlay from "./components/ui/TutorialOverlay";
 import { useGameStore } from "./game/store";
 
 function App() {
@@ -31,6 +34,9 @@ function App() {
         <EventLog />
       </aside>
       <NPCPanel />
+      <InstructionPanel />
+      <FeedbackToasts />
+      <TutorialOverlay />
       <SessionSummary />
     </main>
   );

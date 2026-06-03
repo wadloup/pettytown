@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import type { GameState, Intervention } from "./types";
+import { addPostActionFeedback } from "./effects";
 import { generateInitialState } from "./initialState";
+import { buildInteractionForIntervention, buildSecondNpcInteraction, resetInteraction, withHoveredTarget } from "./interaction";
 import { applyIntervention, getIntervention } from "./interventions";
 import { clearSave, loadOrCreateGame, saveGame } from "./saveLoad";
-import { tickGame } from "./simulation";
+import { tickGame } from "./gameLoop";
 
 type GameStore = GameState & {
   tick: () => void;
@@ -11,6 +13,7 @@ type GameStore = GameState & {
   selectLocation: (locationId: string) => void;
   chooseIntervention: (interventionId: Intervention["id"]) => void;
   cancelIntervention: () => void;
+  setHoveredTarget: (targetId?: string) => void;
   togglePause: () => void;
   toggleSpeed: () => void;
   saveNow: () => void;
@@ -26,23 +29,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
   tick: () => set((state) => tickGame(state)),
   selectNpc: (npcId) =>
     set((state) => {
-      const selectedIntervention = getIntervention(state.selectedInterventionId);
+      const selectedIntervention = getIntervention(state.interaction.selectedInterventionId);
 
-      if (selectedIntervention?.target === "npc") {
-        return applyIntervention(state, selectedIntervention.id, npcId);
+      if (state.interaction.mode === "selecting_npc" && selectedIntervention) {
+        const next = applyIntervention(state, selectedIntervention.id, npcId);
+        return addPostActionFeedback(state, next, selectedIntervention.id, "npc", npcId);
       }
 
-      if (selectedIntervention?.target === "npc_pair") {
-        if (!state.pendingPairFirstNpcId || state.pendingPairFirstNpcId === npcId) {
+      if (state.interaction.mode === "selecting_two_npcs" && selectedIntervention) {
+        if (!state.interaction.firstSelectedNpcId || state.interaction.firstSelectedNpcId === npcId) {
           return {
             ...state,
             selectedNpcId: npcId,
             pendingPairFirstNpcId: npcId,
+            interaction: buildSecondNpcInteraction(selectedIntervention.id, npcId),
           };
         }
 
-        return applyIntervention(state, selectedIntervention.id, state.pendingPairFirstNpcId, npcId);
+        const next = applyIntervention(state, selectedIntervention.id, state.interaction.firstSelectedNpcId, npcId);
+        return addPostActionFeedback(state, next, selectedIntervention.id, "npc", state.interaction.firstSelectedNpcId);
       }
+
+      if (state.interaction.mode !== "idle") return state;
 
       return {
         ...state,
@@ -52,11 +60,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }),
   selectLocation: (locationId) =>
     set((state) => {
-      const selectedIntervention = getIntervention(state.selectedInterventionId);
+      const selectedIntervention = getIntervention(state.interaction.selectedInterventionId);
 
-      if (selectedIntervention?.target === "location") {
-        return applyIntervention(state, selectedIntervention.id, locationId);
+      if ((state.interaction.mode === "selecting_location" || state.interaction.mode === "placing_object") && selectedIntervention) {
+        const next = applyIntervention(state, selectedIntervention.id, locationId);
+        return addPostActionFeedback(state, next, selectedIntervention.id, "location", locationId);
       }
+
+      if (state.interaction.mode !== "idle") return state;
 
       return {
         ...state,
@@ -65,16 +76,30 @@ export const useGameStore = create<GameStore>((set, get) => ({
       };
     }),
   chooseIntervention: (interventionId) =>
-    set((state) => ({
-      ...state,
-      selectedInterventionId: state.selectedInterventionId === interventionId ? undefined : interventionId,
+    set((state) => {
+      const isSame = state.interaction.selectedInterventionId === interventionId;
+
+      return {
+        ...state,
+        selectedInterventionId: isSame ? undefined : interventionId,
+        pendingPairFirstNpcId: undefined,
+        interaction: isSame ? resetInteraction() : buildInteractionForIntervention(interventionId),
+      };
+    }),
+  cancelIntervention: () =>
+    set({
+      selectedInterventionId: undefined,
       pendingPairFirstNpcId: undefined,
-    })),
-  cancelIntervention: () => set({ selectedInterventionId: undefined, pendingPairFirstNpcId: undefined }),
+      interaction: resetInteraction(),
+    }),
+  setHoveredTarget: (targetId) => set((state) => ({ interaction: withHoveredTarget(state.interaction, targetId) })),
   togglePause: () => set((state) => ({ isPaused: !state.isPaused })),
   toggleSpeed: () => set((state) => ({ speed: state.speed === 1 ? 2 : 1 })),
   saveNow: () => saveGame(get()),
-  clearSelection: () => set({ selectedNpcId: undefined, selectedLocationId: undefined }),
+  clearSelection: () =>
+    set((state) =>
+      state.interaction.mode === "idle" ? { selectedNpcId: undefined, selectedLocationId: undefined } : state,
+    ),
   newTown: () =>
     set(() => {
       clearSave();

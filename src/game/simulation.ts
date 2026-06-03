@@ -1,6 +1,7 @@
 import type { GameEvent, GameState, NPC, StatusIcon } from "./types";
 import { clamp, makeId, MAX_EVENTS, TICK_SECONDS } from "./constants";
 import { evaluateDrama } from "./dramaEngine";
+import { pruneVisualFeedback } from "./effects";
 import { createMemory, addMemoryToNpcs, pruneMemories } from "./memory";
 import { moveNpc } from "./movement";
 import { decideNpcAction } from "./npcAI";
@@ -173,8 +174,8 @@ export const tickGame = (state: GameState): GameState => {
   };
   const withDrama = evaluateDrama(withPrunedMemories);
 
-  return {
+  return pruneVisualFeedback({
     ...withDrama,
     townStats: recalculateTownStats(withDrama),
-  };
+  });
 };

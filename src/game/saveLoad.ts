@@ -2,6 +2,7 @@ import type { GameState } from "./types";
 import { SAVE_KEY } from "./constants";
 import { generateInitialState } from "./initialState";
 import { getNpcVisualProfile } from "../data/npcVisuals";
+import { idleInteraction } from "./interaction";
 
 export const saveGame = (state: GameState) => {
   window.localStorage.setItem(SAVE_KEY, JSON.stringify(state));
@@ -26,6 +27,9 @@ export const loadGame = (): GameState | undefined => {
           avatarColor: visual.primary,
         };
       }),
+      interaction: parsed.interaction ?? idleInteraction,
+      effects: parsed.effects ?? [],
+      feedbacks: parsed.feedbacks ?? [],
     };
   } catch {
     return undefined;

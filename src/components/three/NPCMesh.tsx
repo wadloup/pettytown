@@ -1,4 +1,4 @@
-import { Text } from "@react-three/drei";
+import { Html, Text } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
@@ -11,7 +11,10 @@ import StatusBillboard from "./StatusBillboard";
 type NPCMeshProps = {
   npc: NPC;
   selected: boolean;
+  targetable: boolean;
+  involvedInDrama: boolean;
   onSelect: (npcId: string) => void;
+  onHover: (hovered: boolean) => void;
 };
 
 function HairMesh({ visual }: { visual: NPCVisual }) {
@@ -191,7 +194,7 @@ function TorsoMesh({ visual }: { visual: NPCVisual }) {
   );
 }
 
-function NPCMesh({ npc, selected, onSelect }: NPCMeshProps) {
+function NPCMesh({ npc, selected, targetable, involvedInDrama, onSelect, onHover }: NPCMeshProps) {
   const [hovered, setHovered] = useState(false);
   const visual = npc.visual ?? getNpcVisualProfile(Number(npc.id.replace("npc_", "")) || 0, npc.personality);
   const groupRef = useRef<Group>(null);
@@ -230,10 +233,20 @@ function NPCMesh({ npc, selected, onSelect }: NPCMeshProps) {
       onPointerOver={(event) => {
         event.stopPropagation();
         setHovered(true);
+        onHover(true);
       }}
-      onPointerOut={() => setHovered(false)}
+      onPointerOut={() => {
+        setHovered(false);
+        onHover(false);
+      }}
     >
-      {selected || hovered ? <SelectionRing color={selected ? visual.accent : visual.primary} /> : null}
+      {selected || hovered || targetable ? <SelectionRing color={selected ? visual.accent : targetable ? "#D946EF" : visual.primary} /> : null}
+      {involvedInDrama ? (
+        <mesh position={[0, 1.86, 0]}>
+          <sphereGeometry args={[0.07, 8, 6]} />
+          <meshStandardMaterial color="#FB7185" emissive="#FB7185" emissiveIntensity={1.2} />
+        </mesh>
+      ) : null}
 
       <group ref={bodyRef}>
         <TorsoMesh visual={visual} />
@@ -279,7 +292,7 @@ function NPCMesh({ npc, selected, onSelect }: NPCMeshProps) {
 
       <StatusBillboard icons={npc.statusIcons} />
 
-      {(selected || hovered) && (
+      {(selected || hovered || targetable) && (
         <Text
           position={[0, 1.98, 0]}
           rotation={[-Math.PI / 4, 0, 0]}
@@ -293,6 +306,18 @@ function NPCMesh({ npc, selected, onSelect }: NPCMeshProps) {
           {visual.title}
         </Text>
       )}
+
+      {hovered ? (
+        <Html position={[0, 2.24, 0]} center>
+          <div className="world-tooltip npc-tooltip">
+            <strong>{npc.name}</strong>
+            <span>{visual.title}</span>
+            <small>
+              Stress {Math.round(npc.stats.stress)} - {npc.currentAction}
+            </small>
+          </div>
+        </Html>
+      ) : null}
 
       <Text
         position={[0, 1.46, 0]}
