@@ -7,6 +7,7 @@ import { createMemory, addMemoryToNpcs } from "./memory";
 import { distanceBetween, moveNpcToLocation, randomPointNear } from "./movement";
 import { adjustRelationship } from "./relationships";
 import { recalculateTownStats } from "./scoring";
+import { describeWithZoneContext } from "./zones";
 
 export const interventions: Intervention[] = [
   {
@@ -105,6 +106,7 @@ const createEvent = (state: GameState, event: Omit<GameEvent, "id" | "timestamp"
   id: makeId("event"),
   timestamp: state.time,
   ...event,
+  description: describeWithZoneContext(state, event.description, event.locationId),
 });
 
 const addEvent = (state: GameState, event: GameEvent) => ({
@@ -159,7 +161,7 @@ export const applyIntervention = (
     if (!target) return state;
 
     const nearby = paid.npcs
-      .filter((npc) => npc.id !== target.id && distanceBetween(npc.position, target.position) < 3)
+      .filter((npc) => npc.zoneId === target.zoneId && npc.id !== target.id && distanceBetween(npc.position, target.position) < 3)
       .slice(0, 4);
     const description = `Une voix sans source affirme que ${target.name} cache quelque chose. ${nearby[0]?.name ?? "La ville"} repete "je ne juge pas" avec beaucoup trop d'energie.`;
     let npcs = updateNpc(paid.npcs, target.id, (npc) =>
@@ -236,6 +238,7 @@ export const applyIntervention = (
     const worldObject = {
       id: makeId("object"),
       ...catalogItem,
+      zoneId: location.zoneId,
       position: randomPointNear(location.position, Math.max(location.size.width, location.size.depth) * 0.42),
       discoveredByNpcIds: [],
     };
@@ -361,6 +364,7 @@ export const applyIntervention = (
     if (!location) return state;
 
     const invited = [...paid.npcs]
+      .filter((npc) => npc.zoneId === location.zoneId)
       .sort(() => Math.random() - 0.5)
       .slice(0, 6)
       .map((npc) => npc.id);
@@ -395,7 +399,7 @@ export const applyIntervention = (
     const location = paid.locations.find((candidate) => candidate.id === targetId);
     if (!location) return state;
 
-    const present = paid.npcs.filter((npc) => distanceBetween(npc.position, location.position) < 2.7).map((npc) => npc.id);
+    const present = paid.npcs.filter((npc) => npc.zoneId === location.zoneId && distanceBetween(npc.position, location.position) < 2.7).map((npc) => npc.id);
     const npcs = paid.npcs.map((npc) =>
       present.includes(npc.id)
         ? withIcon(
@@ -427,7 +431,7 @@ export const applyIntervention = (
     const target = paid.npcs.find((npc) => npc.id === targetId);
     if (!target) return state;
 
-    const nearby = paid.npcs.filter((npc) => npc.id !== target.id && distanceBetween(npc.position, target.position) < 2.6);
+    const nearby = paid.npcs.filter((npc) => npc.zoneId === target.zoneId && npc.id !== target.id && distanceBetween(npc.position, target.position) < 2.6);
     let npcs = updateNpc(paid.npcs, target.id, (npc) =>
       withIcon(
         {
@@ -463,7 +467,7 @@ export const applyIntervention = (
     const location = paid.locations.find((candidate) => candidate.id === targetId);
     if (!location) return state;
 
-    const present = paid.npcs.filter((npc) => distanceBetween(npc.position, location.position) < 2.7).map((npc) => npc.id);
+    const present = paid.npcs.filter((npc) => npc.zoneId === location.zoneId && distanceBetween(npc.position, location.position) < 2.7).map((npc) => npc.id);
     const problem = pick(tinyDisasters);
     const locations = paid.locations.map((candidate) =>
       candidate.id === location.id ? { ...candidate, effect: "minor_disaster" as const, effectUntil: paid.time + 90 } : candidate,

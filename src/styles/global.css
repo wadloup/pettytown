@@ -1205,6 +1205,73 @@ button:disabled {
   border-color: rgba(251, 113, 133, 0.34);
 }
 
+.zone-exit-button {
+  position: absolute;
+  top: 92px;
+  left: 50%;
+  z-index: 7;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(34, 211, 238, 0.34);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #e0fbff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: var(--shadow), 0 0 22px rgba(34, 211, 238, 0.14);
+  transform: translateX(-50%);
+  backdrop-filter: blur(18px);
+}
+
+.zone-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: rgba(2, 6, 23, 0.42);
+  animation: zoneFade 950ms ease forwards;
+}
+
+.zone-transition strong,
+.zone-transition span {
+  display: block;
+  text-align: center;
+}
+
+.zone-transition strong {
+  color: var(--text);
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  text-shadow: 0 0 28px rgba(217, 70, 239, 0.38);
+}
+
+.zone-transition span {
+  margin-top: 8px;
+  color: #a5f3fc;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+@keyframes zoneFade {
+  0%,
+  12% {
+    opacity: 0;
+  }
+
+  28%,
+  72% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 .tutorial-layer {
   position: absolute;
   inset: 0;

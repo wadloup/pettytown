@@ -9,6 +9,8 @@ import { makeId, pick, sample } from "./constants";
 import { idleInteraction } from "./interaction";
 import { createRelationship } from "./relationships";
 import { randomPointNear } from "./movement";
+import { interiorCafeLocation } from "./zones";
+import type { ZoneId } from "./zoneTypes";
 
 const initialEvents: GameEvent[] = [
   {
@@ -40,8 +42,12 @@ const initialEvents: GameEvent[] = [
   },
 ];
 
+const cafeResidentIndexes = new Set([0, 3, 6, 8]);
+
 const createNpc = (index: number): NPC => {
-  const location = baseLocations[index % baseLocations.length];
+  const zoneId: ZoneId = cafeResidentIndexes.has(index) ? "interior_cafe" : "town_center";
+  const zoneLocations = zoneId === "interior_cafe" ? [interiorCafeLocation] : baseLocations;
+  const location = zoneLocations[index % zoneLocations.length];
   const traits = sample(personalityTraits, 2 + (Math.random() > 0.62 ? 1 : 0));
   const visual = getNpcVisualProfile(index, traits);
   const thoughtPool = traits.flatMap((trait) => traitThoughts[trait]);
@@ -54,6 +60,7 @@ const createNpc = (index: number): NPC => {
     avatarColor: visual.primary,
     title: visual.title,
     visual,
+    zoneId,
     locationId: location.id,
     position,
     targetPosition: randomPointNear(location.position, 1.4),
@@ -74,7 +81,7 @@ const createNpc = (index: number): NPC => {
     relationships: {},
     memories: [],
     currentThought: pick(thoughtPool),
-    currentAction: `traine vers ${location.name}`,
+    currentAction: zoneId === "interior_cafe" ? `traine au ${location.name}` : `traine vers ${location.name}`,
     statusIcons: index < 2 ? ["aura"] : [],
     tags: [],
   };
@@ -92,8 +99,10 @@ export const generateInitialState = (): GameState => {
   const npcs = withRelationships(Array.from({ length: 10 }, (_, index) => createNpc(index)));
 
   return {
+    currentZoneId: "town_center",
+    previousZoneId: undefined,
     npcs,
-    locations: baseLocations.map((location) => ({ ...location, position: { ...location.position }, size: { ...location.size } })),
+    locations: [...baseLocations, interiorCafeLocation].map((location) => ({ ...location, position: { ...location.position }, size: { ...location.size } })),
     objects: [],
     events: initialEvents,
     dramaArcs: [],

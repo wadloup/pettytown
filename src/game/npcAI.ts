@@ -8,6 +8,7 @@ export const decideNpcAction = (npc: NPC, state: GameState): NPCAction | undefin
   const nearby = nearestNpcs(npc, state, 2.25);
   const undiscoveredObject = state.objects.find(
     (worldObject) =>
+      worldObject.zoneId === npc.zoneId &&
       !worldObject.discoveredByNpcIds.includes(npc.id) &&
       Math.hypot(worldObject.position.x - npc.position.x, worldObject.position.z - npc.position.z) < 2.4,
   );

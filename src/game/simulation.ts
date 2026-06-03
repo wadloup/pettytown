@@ -7,6 +7,7 @@ import { moveNpc } from "./movement";
 import { decideNpcAction } from "./npcAI";
 import { adjustRelationship } from "./relationships";
 import { recalculateTownStats, eventInfluenceReward } from "./scoring";
+import { describeWithZoneContext } from "./zones";
 
 const actionIcon: Record<string, StatusIcon> = {
   talk: "idea",
@@ -38,10 +39,11 @@ const makeEvent = (state: GameState, event: Omit<GameEvent, "id" | "timestamp">)
   id: makeId("event"),
   timestamp: state.time,
   ...event,
+  description: describeWithZoneContext(state, event.description, event.locationId),
 });
 
 const applyAutonomousAction = (state: GameState): GameState => {
-  const shuffled = [...state.npcs].sort(() => Math.random() - 0.5);
+  const shuffled = state.npcs.filter((npc) => npc.zoneId === state.currentZoneId).sort(() => Math.random() - 0.5);
   const action = shuffled.map((npc) => decideNpcAction(npc, state)).find(Boolean);
 
   if (!action) return state;
@@ -153,6 +155,8 @@ export const tickGame = (state: GameState): GameState => {
       location.effectUntil && location.effectUntil < nextTime ? { ...location, effect: undefined, effectUntil: undefined } : location,
     ),
     npcs: state.npcs.map((npc) => {
+      if (npc.zoneId !== state.currentZoneId) return npc;
+
       const moved = moveNpc(npc, state, movementDelta);
       return {
         ...moved,

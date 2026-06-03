@@ -8,6 +8,7 @@ import SessionSummary from "./components/ui/SessionSummary";
 import TopBar from "./components/ui/TopBar";
 import TownStatsPanel from "./components/ui/TownStatsPanel";
 import TutorialOverlay from "./components/ui/TutorialOverlay";
+import ZoneTransition from "./components/ui/ZoneTransition";
 import { useGameStore } from "./game/store";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
       </aside>
       <InstructionPanel />
       <FeedbackToasts />
+      <ZoneTransition />
       <TutorialOverlay />
       <SessionSummary />
     </main>

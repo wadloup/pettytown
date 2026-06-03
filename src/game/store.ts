@@ -6,9 +6,15 @@ import { buildInteractionForIntervention, buildSecondNpcInteraction, resetIntera
 import { applyIntervention, getIntervention } from "./interventions";
 import { clearSave, loadOrCreateGame, saveGame } from "./saveLoad";
 import { tickGame } from "./gameLoop";
+import { randomPointNear } from "./movement";
+import type { ZoneId } from "./zoneTypes";
+import { getDefaultLocationForZone, zoneSpawnPoint } from "./zones";
 
 type GameStore = GameState & {
   tick: () => void;
+  enterZone: (zoneId: ZoneId) => void;
+  exitToPreviousZone: () => void;
+  moveNpcToZone: (npcId: string, zoneId: ZoneId) => void;
   selectNpc: (npcId: string) => void;
   selectLocation: (locationId: string) => void;
   chooseIntervention: (interventionId: Intervention["id"]) => void;
@@ -24,12 +30,48 @@ type GameStore = GameState & {
 
 const initial = typeof window === "undefined" ? generateInitialState() : loadOrCreateGame();
 
+const withZoneChange = (state: GameState, zoneId: ZoneId): Partial<GameState> => ({
+  currentZoneId: zoneId,
+  previousZoneId: state.currentZoneId,
+  selectedNpcId: undefined,
+  selectedLocationId: undefined,
+  selectedInterventionId: undefined,
+  pendingPairFirstNpcId: undefined,
+  interaction: resetInteraction(),
+});
+
 export const useGameStore = create<GameStore>((set, get) => ({
   ...initial,
   tick: () => set((state) => tickGame(state)),
+  enterZone: (zoneId) => set((state) => withZoneChange(state, zoneId)),
+  exitToPreviousZone: () =>
+    set((state) => withZoneChange(state, state.previousZoneId && state.previousZoneId !== state.currentZoneId ? state.previousZoneId : "town_center")),
+  moveNpcToZone: (npcId, zoneId) =>
+    set((state) => {
+      const location = getDefaultLocationForZone(state.locations, zoneId);
+      const position = randomPointNear(zoneSpawnPoint(zoneId), 0.85);
+
+      return {
+        ...state,
+        npcs: state.npcs.map((npc) =>
+          npc.id === npcId
+            ? {
+                ...npc,
+                zoneId,
+                locationId: location.id,
+                position,
+                targetPosition: randomPointNear(location.position, 1.15),
+                currentAction: zoneId === "interior_cafe" ? "s'installe au Cafe des Soupirs" : "revient dans la ville",
+              }
+            : npc,
+        ),
+      };
+    }),
   selectNpc: (npcId) =>
     set((state) => {
       const selectedIntervention = getIntervention(state.interaction.selectedInterventionId);
+      const npc = state.npcs.find((candidate) => candidate.id === npcId);
+      if (!npc || npc.zoneId !== state.currentZoneId) return state;
 
       if (state.interaction.mode === "selecting_npc" && selectedIntervention) {
         const next = applyIntervention(state, selectedIntervention.id, npcId);
@@ -71,10 +113,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
   selectLocation: (locationId) =>
     set((state) => {
       const selectedIntervention = getIntervention(state.interaction.selectedInterventionId);
+      const location = state.locations.find((candidate) => candidate.id === locationId);
+      if (!location || location.zoneId !== state.currentZoneId) return state;
 
       if ((state.interaction.mode === "selecting_location" || state.interaction.mode === "placing_object") && selectedIntervention) {
         const next = applyIntervention(state, selectedIntervention.id, locationId);
         return addPostActionFeedback(state, next, selectedIntervention.id, "location", locationId);
+      }
+
+      if (state.interaction.mode === "idle" && location.interiorZoneId) {
+        return withZoneChange(state, location.interiorZoneId);
       }
 
       return state;

@@ -1,3 +1,7 @@
+import type { ZoneId } from "./zoneTypes";
+
+export type { ZoneId } from "./zoneTypes";
+
 export type Vector3Data = {
   x: number;
   y: number;
@@ -85,6 +89,7 @@ export type NPC = {
   avatarColor: string;
   title: string;
   visual: NPCVisual;
+  zoneId: ZoneId;
   locationId: string;
   position: Vector3Data;
   targetPosition: Vector3Data;
@@ -105,6 +110,8 @@ export type Location = {
   id: string;
   name: string;
   type: "cafe" | "park" | "shop" | "town_square" | "home" | "office";
+  zoneId: ZoneId;
+  interiorZoneId?: ZoneId;
   position: Vector3Data;
   size: {
     width: number;
@@ -121,6 +128,7 @@ export type WorldObject = {
   id: string;
   name: string;
   type: "red_box" | "golden_chair" | "lost_phone" | "mystery_letter" | "fake_trophy" | "sign";
+  zoneId: ZoneId;
   position: Vector3Data;
   importance: number;
   discoveredByNpcIds: string[];
@@ -215,6 +223,8 @@ export type FeedbackToast = {
 };
 
 export type GameState = {
+  currentZoneId: ZoneId;
+  previousZoneId?: ZoneId;
   npcs: NPC[];
   locations: Location[];
   objects: WorldObject[];

@@ -22,14 +22,15 @@ export const findLocation = (locations: Location[], id: string) =>
 
 export const nearestNpcs = (npc: NPC, state: GameState, radius = 2.1) =>
   state.npcs
-    .filter((candidate) => candidate.id !== npc.id)
+    .filter((candidate) => candidate.id !== npc.id && candidate.zoneId === npc.zoneId)
     .map((candidate) => ({ npc: candidate, distance: distance2D(candidate.position, npc.position) }))
     .filter((candidate) => candidate.distance <= radius)
     .sort((a, b) => a.distance - b.distance);
 
 const chooseLocationForMood = (npc: NPC, state: GameState) => {
+  const availableLocations = state.locations.filter((location) => location.zoneId === npc.zoneId);
   const rival = getClosestRelationship(npc, "rival");
-  const object = state.objects.find((worldObject) => !worldObject.discoveredByNpcIds.includes(npc.id));
+  const object = state.objects.find((worldObject) => worldObject.zoneId === npc.zoneId && !worldObject.discoveredByNpcIds.includes(npc.id));
 
   if (object && (npc.personality.includes("parano") || npc.personality.includes("opportuniste") || Math.random() > 0.68)) {
     return {
@@ -38,21 +39,21 @@ const chooseLocationForMood = (npc: NPC, state: GameState) => {
     };
   }
 
-  if (npc.stats.stress > 72) return state.locations.find((location) => location.id === "park") ?? pick(state.locations);
-  if (npc.personality.includes("ambitieux")) return state.locations.find((location) => location.id === "office") ?? pick(state.locations);
-  if (npc.personality.includes("opportuniste")) return state.locations.find((location) => location.id === "shop") ?? pick(state.locations);
-  if (npc.personality.includes("dramatique")) return state.locations.find((location) => location.id === "town_square") ?? pick(state.locations);
+  if (npc.stats.stress > 72) return availableLocations.find((location) => location.id === "park") ?? pick(availableLocations);
+  if (npc.personality.includes("ambitieux")) return availableLocations.find((location) => location.id === "office") ?? pick(availableLocations);
+  if (npc.personality.includes("opportuniste")) return availableLocations.find((location) => location.id === "shop") ?? pick(availableLocations);
+  if (npc.personality.includes("dramatique")) return availableLocations.find((location) => location.id === "town_square") ?? pick(availableLocations);
   if (rival && rival.rivalry + rival.resentment > 95 && Math.random() > 0.45) {
     const rivalNpc = state.npcs.find((candidate) => candidate.id === rival.targetNpcId);
     if (rivalNpc) {
-      const farLocations = [...state.locations].sort(
+      const farLocations = [...availableLocations].sort(
         (a, b) => distance2D(b.position, rivalNpc.position) - distance2D(a.position, rivalNpc.position),
       );
       return farLocations[0];
     }
   }
 
-  return pick(state.locations);
+  return pick(availableLocations);
 };
 
 export const chooseNextDestination = (npc: NPC, state: GameState): NPC => {
@@ -101,6 +102,7 @@ export const moveNpc = (npc: NPC, state: GameState, delta: number) => {
 
 export const moveNpcToLocation = (npc: NPC, location: Location) => ({
   ...npc,
+  zoneId: location.zoneId,
   locationId: location.id,
   targetPosition: randomPointNear(location.position, Math.max(location.size.width, location.size.depth) * 0.42),
   currentAction: `rejoint ${location.name}`,

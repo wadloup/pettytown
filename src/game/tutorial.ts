@@ -9,6 +9,14 @@ export type TutorialStep = {
 
 export const TUTORIAL_KEY = "pettytown.tutorial.done.v1";
 
+const getStorage = () => {
+  try {
+    return typeof window === "undefined" ? undefined : window.localStorage;
+  } catch {
+    return undefined;
+  }
+};
+
 export const tutorialSteps: TutorialStep[] = [
   {
     id: "intro",
@@ -48,8 +56,8 @@ export const tutorialSteps: TutorialStep[] = [
   },
 ];
 
-export const isTutorialDone = () => window.localStorage.getItem(TUTORIAL_KEY) === "done";
+export const isTutorialDone = () => getStorage()?.getItem(TUTORIAL_KEY) === "done";
 
 export const markTutorialDone = () => {
-  window.localStorage.setItem(TUTORIAL_KEY, "done");
+  getStorage()?.setItem(TUTORIAL_KEY, "done");
 };

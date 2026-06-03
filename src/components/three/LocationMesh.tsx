@@ -8,30 +8,32 @@ type LocationMeshProps = {
   location: Location;
   selected: boolean;
   targetable: boolean;
+  clickable: boolean;
+  tooltipText?: string;
   interactionActive: boolean;
   onSelect: (locationId: string) => void;
   onHover: (hovered: boolean) => void;
 };
 
-function LocationMesh({ location, selected, targetable, interactionActive, onSelect, onHover }: LocationMeshProps) {
+function LocationMesh({ location, selected, targetable, clickable, tooltipText, interactionActive, onSelect, onHover }: LocationMeshProps) {
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    if (!targetable && hovered) {
+    if (!clickable && hovered) {
       setHovered(false);
       onHover(false);
       document.body.style.cursor = "";
     }
-  }, [hovered, onHover, targetable]);
+  }, [clickable, hovered, onHover]);
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
-    if (!targetable) return;
+    if (!clickable) return;
     onSelect(location.id);
   };
 
   const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
-    if (!targetable) return;
+    if (!clickable) return;
     event.stopPropagation();
     setHovered(true);
     onHover(true);
@@ -51,11 +53,11 @@ function LocationMesh({ location, selected, targetable, interactionActive, onSel
   return (
     <group
       position={[location.position.x, 0, location.position.z]}
-      onClick={targetable ? handleClick : undefined}
-      onPointerOver={targetable ? handlePointerOver : undefined}
-      onPointerOut={targetable ? handlePointerOut : undefined}
+      onClick={clickable ? handleClick : undefined}
+      onPointerOver={clickable ? handlePointerOver : undefined}
+      onPointerOut={clickable ? handlePointerOut : undefined}
     >
-      {targetable ? (
+      {clickable ? (
         <mesh
           position={[0, 0.09, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
@@ -105,7 +107,7 @@ function LocationMesh({ location, selected, targetable, interactionActive, onSel
         <Html position={[0, location.size.height + 1.32, 0]} center>
           <div className="world-tooltip">
             <strong>{location.name}</strong>
-            <span>Cliquer pour cibler ce lieu</span>
+            <span>{tooltipText ?? "Cliquer pour cibler ce lieu"}</span>
           </div>
         </Html>
       ) : null}

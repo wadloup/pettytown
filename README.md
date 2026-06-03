@@ -25,6 +25,7 @@ npm run lint
 - `src/game/initialState.ts` : generation d'une nouvelle ville.
 - `src/game/gameLoop.ts` : facade de boucle de jeu, actuellement branchee sur `tickGame`.
 - `src/game/simulation.ts` : avance de la simulation sociale a chaque tick.
+- `src/game/zoneTypes.ts` et `src/game/zones.ts` : zones disponibles, metadonnees et lieux interieurs.
 - `src/game/interaction.ts` : etats d'interaction joueur, instructions et selection de cible.
 - `src/game/targeting.ts` : regles qui disent quels PNJ ou lieux sont ciblables.
 - `src/game/effects.ts` : feedbacks d'action, toasts et effets visuels temporaires.
@@ -35,6 +36,14 @@ npm run lint
 - `src/game/eventGenerator.ts` : couche narrative template-first, prete pour une IA externe.
 - `src/game/saveLoad.ts` : sauvegarde locale via `localStorage`.
 - `src/data/` : noms, traits, secrets, lieux, objets et textes.
+
+## Ajouter une zone ou un interieur
+
+1. Ajouter l'identifiant dans `src/game/zoneTypes.ts`.
+2. Ajouter ses metadonnees et son lieu principal dans `src/game/zones.ts`.
+3. Creer une scene dans `src/components/three/zones/`.
+4. Brancher cette scene dans `src/components/three/TownScene.tsx`.
+5. Donner un `zoneId` aux PNJ, lieux et objets concernes.
 
 ## Ajouter une intervention
 
