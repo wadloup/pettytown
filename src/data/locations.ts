@@ -1,0 +1,50 @@
+import type { Location } from "../game/types";
+import { locationColors } from "./colors";
+
+export const baseLocations: Location[] = [
+  {
+    id: "town_square",
+    name: "Place centrale",
+    type: "town_square",
+    position: { x: 0, y: 0, z: 0 },
+    size: { width: 3.2, depth: 3.2, height: 0.18 },
+    color: locationColors.town_square,
+    vibe: "officiel mais facilement ridicule",
+  },
+  {
+    id: "cafe",
+    name: "Cafe des Soupirs",
+    type: "cafe",
+    position: { x: -5.2, y: 0, z: 0.6 },
+    size: { width: 2.8, depth: 2.1, height: 1.55 },
+    color: locationColors.cafe,
+    vibe: "rumeurs servies tiedes",
+  },
+  {
+    id: "park",
+    name: "Parc des Bancs",
+    type: "park",
+    position: { x: -0.6, y: 0, z: 4.8 },
+    size: { width: 3.8, depth: 2.6, height: 0.35 },
+    color: locationColors.park,
+    vibe: "confidences mal synchronisees",
+  },
+  {
+    id: "shop",
+    name: "Superette Minute",
+    type: "shop",
+    position: { x: 5.2, y: 0, z: 0.2 },
+    size: { width: 2.8, depth: 2.3, height: 1.45 },
+    color: locationColors.shop,
+    vibe: "petits prix et grands soupcons",
+  },
+  {
+    id: "office",
+    name: "Bureau municipal",
+    type: "office",
+    position: { x: 0.3, y: 0, z: -4.8 },
+    size: { width: 3.3, depth: 2.2, height: 1.75 },
+    color: locationColors.office,
+    vibe: "reunions qui deviennent des ceremonies",
+  },
+];

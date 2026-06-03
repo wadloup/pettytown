@@ -1,0 +1,16 @@
+export const npcNames = [
+  "Yanis",
+  "Lina",
+  "Karim",
+  "Mehdi",
+  "Nora",
+  "Samir",
+  "Ines",
+  "Camille",
+  "Basile",
+  "Maya",
+  "Amin",
+  "Sofia",
+  "Noe",
+  "Leila",
+];
